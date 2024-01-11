@@ -40,7 +40,7 @@ and SHALL BE selected through this header.
 The submitted payload and the returned result SHOULD be encoded in UTF-8; when not otherwise specified,
 the HTTP `POST` method SHOULD be used.
 
-### `"/dataset"` endpoint
+### `/dataset` endpoint
 
 This endpoint returns the description and/or contents of one or more datasets specified in the body 
 argument with their aliases.
@@ -100,7 +100,7 @@ which refers to a VTL alias, known to the web service.
 The response MUST be an empty JSON object in case of success, otherwise an appropriate HTTP error 
 response should be used.
 
-### `"/structure"` endpoint
+### `/structure` endpoint
 
 This endpoint returns a description of one or more structures specified in the body argument with
 their identifier. The body argument MUST BE an array of strings, each of which MUST be the identifier 
@@ -140,7 +140,7 @@ which refers to an indentifier of a VTL structure, known to the web service.
 The response MUST be an empty JSON object in case of success, otherwise an appropriate HTTP error 
 response should be used.
 
-### `"/variable"` endpoint
+### `/variable` endpoint
 
 This endpoint returns a description of one or more represented variables specified in the body argument
 with their identifier. The body argument MUST BE an array of strings, each of which MUST be the 
@@ -153,7 +153,7 @@ VTL represented variable with the following properties:
 1. `"domain"`:      a mandatory string property specifying the valuedomain of the VTL represented variable;
 2. `"description"`: an optional string property describing the meaning of the VTL represented variable.
 
-### `"/domain"` endpoint
+### `/domain` endpoint
 
 This endpoint returns a description of one or more value domain subsets, specified in the body argument
 with their identifier. The body argument MUST BE an array of strings, each of which MUST be the identifier 
@@ -174,7 +174,7 @@ The JSON object MUST also have exactly one among these properties that describes
 * `"externalref"`: a string containing an opaque description of a VTL value domain subset stored externally,
                    in case of SDMX codelists this SHOULD be a SDMX URN.
 
-### `"/execution"` endpoint
+### `/execution` endpoint
 
 This endpoint submits a VTL program to the web service for execution. The body argument MUST be a JSON
 object, containing the following properties:
