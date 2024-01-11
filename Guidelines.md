@@ -15,11 +15,16 @@ interpreted as in the specification, they MUST be written upper-case.
 # Web API for VTL engines
 
 This chapter describes guidelines for implementors of web service applications providing access
-to VTL engine or VTL technology stack implementations.
+to VTL engines, or VTL engines exposing web services.
 
 ## Basic architecture
 
-A VTL web service implementation SHOULD provide at least these HTTP (POST) endpoints:
+A VTL engine MAY expose a set of web services, or an application layer MAY support interoperability
+with a VTL engine instance located elsewhere. In the latter case, the web service MAY use any 
+technology supported by the engine instance, such as JSON-RPC or CORBA, to transfer control between
+the engine and the application layer.
+
+A VTL web service implementation SHOULD provide at least these endpoints:
 
 1. `/dataset`: returns the contents of of one or more datasets;
 2. `/structure`: returns the structure(s) of one or more datasets;
@@ -32,11 +37,8 @@ HTTP `Accept` header has the value `Accept: application/json;q=1.0, text/plain;q
 Additional content-types not specified in this document MAY BE supported by a specific implementation
 and SHALL BE selected through this header.
 
-The submitted payload and the returned result SHOULD BE encoded in UTF-8.
-
-The web application MAY contain an embedded VTL engine, or MAY submit the user request to a reachable
-VTL engine instance located elsewhere. In the latter case, the web service MAY use any supported 
-technology, such as JSON-RPC or CORBA, to transfer the request and retrieve the result.
+The submitted payload and the returned result SHOULD be encoded in UTF-8; when not otherwise specified,
+the HTTP `POST` method SHOULD be used.
 
 ### `"/dataset"` endpoint
 
@@ -44,18 +46,17 @@ This endpoint returns the description and/or contents of one or more datasets sp
 argument with their aliases.
 
 The body argument MUST BE a JSON object, whose keys MUST refer to a VTL alias, known to the web 
-service, and whose corresponding values MUST be strings indicating whether the content of datasets
-should be included in the response. The string values MUST belong to the following enumeration:
+service, and whose corresponding values MUST be JSON objects with the following properties:
 
-* `"none"`: Indicates that data is not requested and SHALL NOT be present in the response;
-* `"data"`: Indicates that data is requested and SHOULD be present in the response; no particular
-            serialization format is preferred;
-* `"cols"`: Indicates that data is requested and SHOULD be present in the response; if possible,
-            data SHOULD be serialized in columnar format, as a dictionary of arrays;
-* `"rows"`: Indicates that data is requested and SHOULD be present in the response; if possible,
-            data SHOULD be serialized in row format, as an array of dictionaries.
+1. `"data"`: a mandatory string property indicating whether the content of datasets should be
+             included in the response. It MAY have the values `"none"`, `"data"`, `"cols"` or
+             `"rows"`. If `"none"` is used, data SHOULD NOT be included in the response. If
+             `"cols"` is used, data SHOULD be serialized in columnar format, as a JSON object
+             with array values. If `"rows"` is used, data SHOULD BE serialized in row format,
+             as an array of JSON objects. If `"data"` or another value is used, data SHOULD
+             BE present in the response serialized with a format chosen by implementation.
 
-The response MUST BE a JSON dictionary, where each key MUST correspond to exactly one of the aliases
+The response MUST BE a JSON object, where each key MUST correspond to exactly one of the aliases
 specified in the request body argument. Each value MUST BE a JSON object containing the following
 properties:
 
@@ -64,7 +65,7 @@ properties:
 3. `"source"`:       an optional JSON object property containing data source information (i.e. an URL 
                      for data retrieval or specific text or date formats used in the data source);
 4. `"presentation"`: an optional JSON object property containing additional information useful when
-                     displaying data from this dataset, such as columns order and sorting information;
+                     displaying data from this dataset, such as sorting or paging information;
 5. `"data"`:         an optional property that MUST be either a JSON array or a JSON object. If the
                      property is a JSON array, each element of the array MUST BE a JSON object
                      representing a single datapoint, with each key corresponding to a component and
@@ -77,7 +78,7 @@ The web service implementation MAY choose not to provide data content, even if r
 provide the content in either columnar or row format regardless of the expressed preference; clients
 SHOULD NOT expect a particular serialization format.
 
-The `/dataset` endpoint MUST accept the `PUT` HTTP method. The body argument MUST be a JSON object
+The `/dataset` endpoint MAY accept the `PUT` HTTP method. The body argument MUST be a JSON object
 with the following properties:
 
 1. `"alias"`:        The alias to be used for this VTL dataset in a VTL transformation scheme;
@@ -93,13 +94,19 @@ property MUST be present.
 The response MUST be an empty JSON object in case of success, otherwise an appropriate HTTP error 
 response should be used.
 
-### `"structure"` endpoint
+The `/dataset` endpoint MAY accept the `DELETE` HTTP method. The body argument MUST be a string,
+which refers to a VTL alias, known to the web service.
+
+The response MUST be an empty JSON object in case of success, otherwise an appropriate HTTP error 
+response should be used.
+
+### `"/structure"` endpoint
 
 This endpoint returns a description of one or more structures specified in the body argument with
 their identifier. The body argument MUST BE an array of strings, each of which MUST be the identifier 
 of a VTL structure, known to the web service.
 
-The response MUST BE a JSON dictionary, in which each key MUST BE the identifier of a structure present
+The response MUST BE a JSON object, in which each key MUST BE the identifier of a VTL structure present
 in the body argument and the corresponding value MUST BE a JSON object containing the following 
 properties:
 
@@ -117,26 +124,42 @@ corresponding value MUST be a JSON object with the following properties:
                  this property is true by default for all component roles except for `"identifier"`,
                  in which case the property, if set, MUST have the value `false`.
 
-### `"variable"` endpoint
+The `/structure` endpoint MAY accept the `PUT` HTTP method. The body argument MUST be a JSON object
+with the following properties:
+
+1. `"identifier"`:  a mandatory string property specifying the identifier of the VTL structure;
+2. `"description"`: the same as above;
+3. `"components"`:  the same as above.
+
+The response MUST be an empty JSON object in case of success, otherwise an appropriate HTTP error 
+response should be used.
+
+The `/structure` endpoint MAY accept the `DELETE` HTTP method. The body argument MUST be a string,
+which refers to an indentifier of a VTL structure, known to the web service.
+
+The response MUST be an empty JSON object in case of success, otherwise an appropriate HTTP error 
+response should be used.
+
+### `"/variable"` endpoint
 
 This endpoint returns a description of one or more represented variables specified in the body argument
 with their identifier. The body argument MUST BE an array of strings, each of which MUST be the 
 identifier of a VTL represented variable, known to the web service.
 
-The response MUST BE a JSON dictionary, in which each key MUST BE the identifier of a represented
+The response MUST BE a JSON object, in which each key MUST BE the identifier of a represented
 variable present in the body argument and the corresponding value MUST BE a JSON object describing a 
 VTL represented variable with the following properties:
 
 1. `"domain"`:      a mandatory string property specifying the valuedomain of the VTL represented variable;
 2. `"description"`: an optional string property describing the meaning of the VTL represented variable.
 
-### `"domain"` endpoint
+### `"/domain"` endpoint
 
 This endpoint returns a description of one or more value domain subsets, specified in the body argument
 with their identifier. The body argument MUST BE an array of strings, each of which MUST be the identifier 
 of a VTL value domain subset, known to the web service.
 
-The response MUST BE a JSON dictionary, in which each key MUST BE the identifier of a value domain present
+The response MUST BE a JSON object, in which each key MUST BE the identifier of a value domain present
 in the body argument and the corresponding value MUST BE a JSON object containing the following properties:
 
 1. `"parent"`:      a mandatory string property specifying the parent value domain subset;
@@ -151,7 +174,7 @@ The JSON object MUST also have exactly one among these properties that describes
 * `"externalref"`: a string containing an opaque description of a VTL value domain subset stored externally,
                    in case of SDMX codelists this SHOULD be a SDMX URN.
 
-### `"execution"` endpoint
+### `"/execution"` endpoint
 
 This endpoint submits a VTL program to the web service for execution. The body argument MUST be a JSON
 object, containing the following properties:
@@ -221,4 +244,3 @@ and authorization mechanism, such as SPNEGO. HTTP headers SHOULD be used to prov
 
 Confidentiality SHOULD BE enforced by deploying the implementation behind a reverse proxy or on an 
 application server that is configured to provide a X509 certificate with the https:// protocol.
-
