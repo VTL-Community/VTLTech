@@ -12,12 +12,38 @@ translators...) in order to make implementation of such tools easier and speedie
 These guidelines MAY use keywords from RFC 2119. When one of those keywords SHALL be 
 interpreted as in the specification, they MUST be written upper-case.
 
-# Web API for VTL engines
+# Serialization of VTL artifacts
+
+Sometimes there may be a need to exchange VTL artifacts when operating in H2M or M2M mode.
+This chapter defines a JSON schema that aims to provide an easy implementation of this 
+serialization mechanism.
+
+VTL engine implementors MAY not implement this specific scheme and they MAY provide support for
+alternative or extended serialization schemes.
+
+## JSON scheme
+
+There are two JSON schemes, one for data and the other for metadata. The parts MAY be instanced
+into a single JSON object, in this case each part instance SHOULD be a property named `data` 
+or `metadata` respectively, or they MAY be provided as two different JSON files. In any case,
+one or both MAY be omitted if the VTL engine can infer them from its running environment.
+
+## JSON scheme for data
+
+```
+```
+
+## JSON scheme for metadata
+
+```
+```
+
+# VTL web services
 
 This chapter describes guidelines for implementors of web service applications providing access
 to VTL engines, or VTL engines exposing web services.
 
-## Basic architecture
+## Architecture
 
 A VTL engine MAY expose a set of web services, or an application layer MAY support interoperability
 with a VTL engine instance located elsewhere. In the latter case, the web service MAY use any 
@@ -32,184 +58,16 @@ A VTL web service implementation SHOULD provide at least these endpoints:
 4. `/domain`: returns the description of one or more valuedomain;
 5. `/execution`: returns the status of a submitted VTL program or submits a new VTL program.
 
-The arguments to each method call SHOULD be passed in the body section as a JSON object. The default 
-HTTP `Accept` header has the value `Accept: application/json;q=1.0, text/plain;q=0.8, */*;q=0.6`.
+The default HTTP `Accept` request header SHOULD BE `Accept: application/json;q=1.0, text/plain;q=0.8, */*;q=0.6`.
 Additional content-types not specified in this document MAY BE supported by a specific implementation
 and SHALL BE selected through this header.
 
-The returned result and the submitted payload (where applicable) SHOULD be encoded in UTF-8; when not 
-otherwise specified, the HTTP `GET` method SHOULD be used.
+The returned result and the submitted payload (where applicable) SHOULD be encoded in UTF-8; each endpoint
+SHOULD support the HTTP `GET` method, and the `PUT` and `DELETE` methods MAY also be supported in order to
+create and delete resources.
 
-### `/datapoints` endpoint
-
-This endpoint returns the description and/or contents of all datasets, or of only one dataset if its
-known alias is specified in the URL as the last path element.
-
-The web service SHOULD accept also a `data` URL parameter, that MAY assume one of the following values:
-
-* `"none"`: is used, data SHOULD NOT be included in the response.
-* `"cols"`: indicates that data content SHOULD BE present in the response serialized in column format,
-            as a JSON object with array values, one for each column.
-* `"rows"`: indicates that data content SHOULD BE present in the response serialized in row format,
-            as an array of JSON objects, one for each row.
-* `"data"`: indicates that data content SHOULD BE present in the response serialized with a
-            format chosen by implementation.
-
-When retrieving only one specified dataset, the response SHOULD BE a JSON object containing the 
-following properties:
-
-1. `"structure"`:    a mandatory string property identifying the structure of the VTL dataset;
-2. `"description"`:  An optional string property describing the contents of the dataset;
-3. `"source"`:       an optional JSON object property containing data source information (i.e. an URL 
-                     for data retrieval or specific text or date formats used in the data source);
-4. `"presentation"`: an optional JSON object property containing additional information useful when
-                     displaying data from this dataset, such as sorting or paging information;
-5. `"data"`:         an optional property that MUST be either a JSON array or a JSON object. If the
-                     property is a JSON array, each element of the array MUST BE a JSON object
-                     representing a single datapoint, with each key corresponding to a component and
-                     the value representing the dataset component value. If the property is a JSON
-                     object, keys of each property MUST be component names, and the corresponding
-                     values MUST be arrays containing as their n-th element the value of that
-                     component in the n-th datapoint of the dataset, in encounter order.
-
-The web service implementation MAY choose not to provide data content, even if requested, or to
-provide the content in either columnar or row format regardless of the expressed preference; clients
-SHOULD NOT expect a particular serialization format.
-
-When retrieving all datasets, the response SHOULD BE a JSON object, where each key MUST correspond
-to a dataset alias. Each value SHOULD BE a JSON object with the same structure as the one described 
-above.
-
-The `/datapoints` endpoint MAY accept the `PUT` HTTP method. The identifier of the dataset to put
-MUST BE specified in the URL as the last path element. The body argument MUST be a JSON object
-with the same properties as listed before.
-
-If the `"source"` property is specified, and data content is available to the web service by using
-the reference information provided, the `"data"` property MAY be omitted; otherwise the `"data"` 
-property MUST be present.
-
-The response MUST be an empty JSON object in case of success, otherwise an appropriate HTTP error 
-response should be used.
-
-The `/datapoints` endpoint MAY accept the `DELETE` HTTP method. The identifier of the dataset to 
-delete MUST BE specified in the URL as the last path element.
-
-The response MUST be an empty JSON object in case of success, otherwise an appropriate HTTP error 
-response should be used.
-
-### `/structure` endpoint
-
-This endpoint returns the description of all structures, or of only one structure if its known alias
-is specified in the URL as the last path element.
-
-When retrieving only one specified structure, the response MUST BE a JSON object containing the
-following properties:
-
-1. `"description"`: An optional string property describing the meaning of the structure;
-2. `"components"`:  A mandatory JSON object property describing the components in the structure.
-
-Each key of the `"components"` JSON object MUST have the component name as its key, and the
-corresponding value MUST be a JSON object with the following properties:
-
-1. `"role"`:     a mandatory string property specifying the role of the component, MUST be one of
-                 `"identifier"`, `"measure"` and `"attribute"`;
-2. `"subset"`:   an optional string property specifying if this component can only takes values from
-                 a specified subset of the VTL represented variable domain;
-3. `"nullable"`: an optional boolean property specifying that the component can take the null value;
-                 this property is true by default for all component roles except for `"identifier"`,
-                 in which case the property, if set, MUST have the value `false`.
-
-When retrieving all structures, the response SHOULD BE a JSON object, where each key MUST correspond
-to a structure alias. Each value SHOULD BE a JSON object with the same structure as the one described 
-above.
-
-The `/structure` endpoint MAY accept the `PUT` HTTP method. The identifier of the structure to put
-MUST BE specified in the URL as the last path element. The body argument MUST be a JSON object
-with same properties as listed before.
-
-The response MUST be an empty JSON object in case of success, otherwise an appropriate HTTP error 
-response should be used.
-
-The `/structure` endpoint MAY accept the `DELETE` HTTP method. The identifier of the structure to
-delete MUST BE specified in the URL as the last path element.
-
-The response MUST be an empty JSON object in case of success, otherwise an appropriate HTTP error 
-response should be used.
-
-### `/variable` endpoint
-
-This endpoint returns the description of all represented variables, or of only one represented variable
-if its known alias is specified in the URL as the last path element.
-
-When retrieving only one specified represented variable, the response MUST BE a JSON object describing a 
-VTL represented variable with the following properties:
-
-1. `"domain"`:      a mandatory string property specifying the valuedomain of the VTL represented variable;
-2. `"description"`: an optional string property describing the meaning of the VTL represented variable.
-
-When retrieving all represented variables, the response SHOULD BE a JSON object, where each key MUST 
-correspond to a represented variable alias. Each value SHOULD BE a JSON object with the same structure 
-as the one described above.
-
-The response MUST BE a JSON object, in which each key MUST BE the identifier of a represented
-variable present in the body argument and the corresponding value MUST BE a JSON object describing a 
-VTL represented variable with the following properties:
-
-### `/domain` endpoint
-
-This endpoint returns the description of all value domain subsets, or of only one value domain subset
-if its known alias is specified in the URL as the last path element.
-
-When retrieving only one specified value domain subset, the response MUST BE a JSON object describing a 
-value domain subset with the following properties:
-
-1. `"parent"`:      a mandatory string property specifying the parent value domain subset;
-2. `"description"`: an optional string property describing the meaning of the VTL valuedomain;
-
-The JSON object MUST also have exactly one among these properties to describe the value domain subset:
-
-* `"enumeration"`: a JSON array of values of a type compatible with the parent valuedomain, representing
-                   all the admissible values for the VTL valuedomain or subset;
-* `"condition"`:   a string containing a VTL expression used to restrict the admissible values in the value
-                   domain, the `value` alias SHOULD be used as a placeholder for the actual value;
-* `"externalref"`: a string containing an opaque description of a VTL value domain subset stored externally,
-                   in case of SDMX codelists this SHOULD be a SDMX URN.
-
-### `/execution` endpoint
-
-This endpoint submits a VTL program to the web service for execution. The body argument MUST be a JSON
-object, containing the following properties:
-
-1. `"executionId"`: a mandatory integer property pointing to an identifier of a previously submitted VTL
-                    program;
-2. `"date"`:        a mandatory string property containing the date of the VTL program submission in the
-                    ISO 8601 format;
-3. `"hash"`:        a mandatory string property with the hexadecimal representation of a hash obtained by
-                    applying a hash algorithm to a message composed by concatenating the `"executionId"`
-                    and `"date"` properties, with the current datetime with a precision of milliseconds
-                    expressed in the ISO 8601 format; the hash algorithm SHOULD BE SHA-3.
-
-The web service implementation MAY reject requests that are too frequent or have an invalid hash. The
-rejection MAY be silent, in which case the request is simply ignored, or MAY cause a HTTP 429 error.
-
-The response MUST BE a JSON object containing the following properties:
-
-1. `"executionId"`: a mandatory integer property matching the execution identifier of a previously
-                    submitted VTL program;
-2. `"date"`:        a mandatory string property containing the date of the VTL program submission in the
-                    ISO 8601 format;
-3. `"status"`:      a mandatory string property specifying the state of the job execution;
-
-The `/execution` endpoint MUST accept the `PUT` HTTP method. The body argument MUST be a JSON array of
-strings, each representing one or more lines of a complete VTL program that has at least one persistent
-assignment statement.
-
-The response MUST BE a JSON object containing the following properties:
-
-1. `"executionId"`: a mandatory integer property representing an execution identifier for the submitted
-                    submitted VTL program;
-3. `"date"`:        a mandatory string property containing the date of the VTL program submission in
-                    the ISO 8601 format.
+Eventual parameters for the `PUT` and `DELETE` methods SHOULD BE encoded as a single JSON object and
+passed through the request body.
 
 ## Internationalization
 
