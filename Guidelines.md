@@ -21,19 +21,19 @@ serialization mechanism.
 VTL engine implementors MAY not implement this specific scheme and they MAY provide support for
 alternative or extended serialization schemes.
 
-## JSON scheme
+## JSON schemes
 
 There are two JSON schemes, one for data and the other for metadata. The parts MAY be instanced
 into a single JSON object, in this case each part instance SHOULD be a property named `data` 
 or `metadata` respectively, or they MAY be provided as two different JSON files. In any case,
 one or both MAY be omitted if the VTL engine can infer them from its running environment.
 
-## JSON scheme for data
+### JSON scheme for data
 
 ```
 ```
 
-## JSON scheme for metadata
+### JSON scheme for metadata
 
 ```
 ```
