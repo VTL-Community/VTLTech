@@ -35,7 +35,130 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
 
 ### JSON scheme for metadata
 
-```
+```json
+{
+    "type": "object",
+    "description": "VTL Metadata JSON serialization",
+    "properties": {
+        "datasets": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "pattern": "[a-zA-Z0-9_]"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "source": {
+                        "type": "string"
+                    },
+                    "structure": {
+                        "type": "string",
+                        "pattern": "[a-zA-Z0-9_]"
+                    }
+                },
+                "required": [ "name", "structure" ]
+            }
+        },
+        "structures": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "pattern": "[a-zA-Z0-9_]+"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "components": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "variable": {
+                                    "type": "string",
+                                    "pattern": "[a-zA-Z0-9_]+"
+                                },
+                                "role": {
+                                    "type": "string",
+                                    "enum": [ "Identifier", "Measure", "Attribute", "Viral Attribute" ]
+                                },
+                                "subset": {
+                                    "type": "string",
+                                    "pattern": "[a-zA-Z0-9_]+( not null)?"
+                                }
+                            },
+                            "required": [ "variable", "role" ]
+                        }
+                    }
+                },
+                "required": [ "name", "components" ]
+            }
+        },
+        "variables": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "pattern": "[a-zA-Z0-9_]+"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "domain": {
+                        "type": "string",
+                        "pattern": "[a-zA-Z0-9_]"
+                    }
+                },
+                "required": [ "name", "domain" ]
+            }
+        },
+        "domains": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "pattern": "[a-zA-Z0-9_]"
+                    },
+                    "parent": {
+                        "type": "string",
+                        "pattern": "[a-zA-Z0-9_]"
+                    },
+                    "externalRef": {
+                        "type": "string"
+                    },
+                    "restriction": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {}
+                    },
+                    "enumerated": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {}
+                    },
+                    "described": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "parent",
+                    "externalRef"
+                ]
+            }
+        }
+    }
+}
 ```
 
 # VTL web services
