@@ -47,7 +47,7 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
                 "properties": {
                     "name": {
                         "type": "string",
-                        "pattern": "[a-zA-Z0-9_]"
+                        "pattern": "[a-zA-Z0-9_]+"
                     },
                     "description": {
                         "type": "string"
@@ -57,7 +57,7 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
                     },
                     "structure": {
                         "type": "string",
-                        "pattern": "[a-zA-Z0-9_]"
+                        "pattern": "[a-zA-Z0-9_]+"
                     }
                 },
                 "required": [ "name", "structure" ]
@@ -114,7 +114,7 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
                     },
                     "domain": {
                         "type": "string",
-                        "pattern": "[a-zA-Z0-9_]"
+                        "pattern": "[a-zA-Z0-9_]+"
                     }
                 },
                 "required": [ "name", "domain" ]
@@ -127,11 +127,11 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
                 "properties": {
                     "name": {
                         "type": "string",
-                        "pattern": "[a-zA-Z0-9_]"
+                        "pattern": "[a-zA-Z0-9_]+"
                     },
                     "parent": {
                         "type": "string",
-                        "pattern": "[a-zA-Z0-9_]"
+                        "pattern": "[a-zA-Z0-9_]+"
                     },
                     "externalRef": {
                         "type": "string"
