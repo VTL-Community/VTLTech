@@ -118,7 +118,7 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
                 "oneOf": [
                     {
                         "properties": {
-                            "externalRef": { type: "string" }
+                            "externalRef": { "type": "string" }
                         },
                         "required": [ "externalRef" ]
                     }, {
