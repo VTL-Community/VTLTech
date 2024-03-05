@@ -39,108 +39,108 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
 
 ```json
 {
-    $schema: "https://json-schema.org/draft/2020-12/schema",
-    description: "VTL Metadata JSON serialization",
-    $defs: {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "description": "VTL Metadata JSON serialization",
+    "$defs": {
         "alnum-name": {
-            type: "string",
-            pattern: "[a-zA-Z0-9_]+"
+            "type": "string",
+            "pattern": "[a-zA-Z0-9_]+"
         },
         "set-type": {
-            type: "array",
-            uniqueItems: true,
-            oneOf: [
-                { items: { oneOf: [ { type: "string" }, { type: "null" } ] } },
-                { items: { oneOf: [ { type: "number" }, { type: "null" } ] } }
+            "type": "array",
+            "uniqueItems": true,
+            "oneOf": [
+                { "items": { "oneOf": [ { "type": "string" }, { "type": "null" } ] } },
+                { "items": { "oneOf": [ { "type": "number" }, { "type": "null" } ] } }
             ]
         },
         "identifiable": {
-            type: "object",
-            properties: {
-                "name": { $ref: "#/$defs/alnum-name" },
-                "description": { type: "string" }
+            "type": "object",
+            "properties": {
+                "name": { "$ref": "#/$defs/alnum-name" },
+                "description": { "type": "string" }
             },
-            required: [ "name" ]
+            "required": [ "name" ]
         }
     },
-    type: "object",
-    properties: {
+    "type": "object",
+    "properties": {
         "datasets": {
-            type: "array",
-            items: {
-                allOf: [ { $ref: "#/$defs/identifiable" } ],
-                properties: {
-                    "source": { type: "string" },
-                    "structure": { $ref: "#/$defs/alnum-name" }
+            "type": "array",
+            "items": {
+                "allOf": [ { "$ref": "#/$defs/identifiable" } ],
+                "properties": {
+                    "source": { "type": "string" },
+                    "structure": { "$ref": "#/$defs/alnum-name" }
                 },
-                required: [ "structure" ]
+                "required": [ "structure" ]
             }
         },
         "structures": {
-            type: "array",
-            items: {
-                allOf: [ { $ref: "#/$defs/identifiable" } ],
-                properties: {
+            "type": "array",
+            "items": {
+                "allOf": [ { "$ref": "#/$defs/identifiable" } ],
+                "properties": {
                     "components": {
-                        type: "array",
-                        items: {
-                            allOf: [ { $ref: "#/$defs/identifiable" } ],
-                            properties: {
+                        "type": "array",
+                        "items": {
+                            "allOf": [ { "$ref": "#/$defs/identifiable" } ],
+                            "properties": {
                                 "role": {
-                                    type: "string",
-                                    enum: [ "Identifier", "Measure", "Attribute", "Viral Attribute" ]
+                                    "type": "string",
+                                    "enum": [ "Identifier", "Measure", "Attribute", "Viral Attribute" ]
                                 },
-                                "subset": { $ref: "#/$defs/alnum-name" },
-                                "nullable": { type: "boolean" }
+                                "subset": { "$ref": "#/$defs/alnum-name" },
+                                "nullable": { "type": "boolean" }
                             },
-                            required: [ "role" ]
+                            "required": [ "role" ]
                         }
                     }
                 },
-                required: [ "components" ]
+                "required": [ "components" ]
             }
         },
         "variables": {
-            type: "array",
-            items: {
-                allOf: [ { $ref: "#/$defs/identifiable" } ],
-                properties: {
-                    "domain": { $ref: "#/$defs/alnum-name" }
+            "type": "array",
+            "items": {
+                "allOf": [ { "$ref": "#/$defs/identifiable" } ],
+                "properties": {
+                    "domain": { "$ref": "#/$defs/alnum-name" }
                 },
-                required: [ "domain" ]
+                "required": [ "domain" ]
             }
         },
         "domains": {
-            type: "array",
-            items: {
-                allOf: [ { $ref: "#/$defs/identifiable" } ],
-                unevaluatedProperties: false,
-                oneOf: [
+            "type": "array",
+            "items": {
+                "allOf": [ { "$ref": "#/$defs/identifiable" } ],
+                "unevaluatedProperties": false,
+                "oneOf": [
                     {
-                        properties: {
+                        "properties": {
                             "externalRef": { type: "string" }
                         },
-                        required: [ "externalRef" ]
+                        "required": [ "externalRef" ]
                     }, {
-                        properties: {
-                            "parent": { $ref: "#/$defs/alnum-name" }
+                        "properties": {
+                            "parent": { "$ref": "#/$defs/alnum-name" }
                         },
-                        required: [ "parent" ],
-                        oneOf: [{
-                                properties: {
-                                    "restriction": { $ref: "#/$defs/set-type" }
+                        "required": [ "parent" ],
+                        "oneOf": [{
+                                "properties": {
+                                    "restriction": { "$ref": "#/$defs/set-type" }
                                 },
-                                required: [ "restriction" ]
+                                "required": [ "restriction" ]
                             }, {
-                                properties: {
-                                    "enumerated": { $ref: "#/$defs/set-type" }
+                                "properties": {
+                                    "enumerated": { "$ref": "#/$defs/set-type" }
                                 },
-                                required: [ "enumerated" ]
+                                "required": [ "enumerated" ]
                             }, {
-                                properties: {
+                                "properties": {
                                     "described": { type: "string" }
                                 },
-                                required: [ "described" ]
+                                "required": [ "described" ]
                             }
                         ]
                     }
