@@ -138,7 +138,7 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
                                 "required": [ "enumerated" ]
                             }, {
                                 "properties": {
-                                    "described": { type: "string" }
+                                    "described": { "type": "string" }
                                 },
                                 "required": [ "described" ]
                             }
