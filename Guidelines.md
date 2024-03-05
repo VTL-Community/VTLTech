@@ -30,131 +30,118 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
 
 ### JSON scheme for data
 
-```
+```json
+{
+}
 ```
 
 ### JSON scheme for metadata
 
 ```json
 {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "description": "VTL Metadata JSON serialization",
+    "$defs": {
+        "alnum-name": {
+            "type": "string",
+            "pattern": "[a-zA-Z0-9_]+"
+        },
+        "set-type": {
+            "type": "array",
+            "uniqueItems": true,
+            "oneOf": [
+                { "items": { "oneOf": [ { "type": "string" }, { "type": "null" } ] } },
+                { "items": { "oneOf": [ { "type": "number" }, { "type": "null" } ] } }
+            ]
+        },
+        "identifiable": {
+            "type": "object",
+            "properties": {
+                "name": { "$ref": "#/$defs/alnum-name" },
+                "description": { "type": "string" }
+            },
+            "required": [ "name" ]
+        }
+    },
     "properties": {
         "datasets": {
             "type": "array",
             "items": {
-                "type": "object",
+                "allOf": [ { "$ref": "#/$defs/identifiable" } ],
                 "properties": {
-                    "name": {
-                        "type": "string",
-                        "pattern": "[a-zA-Z0-9_]+"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "source": {
-                        "type": "string"
-                    },
-                    "structure": {
-                        "type": "string",
-                        "pattern": "[a-zA-Z0-9_]+"
-                    }
+                    "source": { "type": "string" },
+                    "structure": { "$ref": "#/$defs/alnum-name" }
                 },
-                "required": [ "name", "structure" ]
+                "required": [ "structure" ]
             }
         },
         "structures": {
             "type": "array",
             "items": {
-                "type": "object",
+                "allOf": [ { "$ref": "#/$defs/identifiable" } ],
                 "properties": {
-                    "name": {
-                        "type": "string",
-                        "pattern": "[a-zA-Z0-9_]+"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
                     "components": {
                         "type": "array",
                         "items": {
-                            "type": "object",
+                            "allOf": [ { "$ref": "#/$defs/identifiable" } ],
                             "properties": {
-                                "variable": {
-                                    "type": "string",
-                                    "pattern": "[a-zA-Z0-9_]+"
-                                },
                                 "role": {
                                     "type": "string",
                                     "enum": [ "Identifier", "Measure", "Attribute", "Viral Attribute" ]
                                 },
-                                "subset": {
-                                    "type": "string",
-                                    "pattern": "[a-zA-Z0-9_]+( not null)?"
-                                }
+                                "subset": { "$ref": "#/$defs/alnum-name" },
+                                "nullable": { "type": "boolean" }
                             },
-                            "required": [ "variable", "role" ]
+                            "required": [ "role" ]
                         }
                     }
                 },
-                "required": [ "name", "components" ]
+                "required": [ "components" ]
             }
         },
         "variables": {
             "type": "array",
             "items": {
-                "type": "object",
+                "allOf": [ { "$ref": "#/$defs/identifiable" } ],
                 "properties": {
-                    "name": {
-                        "type": "string",
-                        "pattern": "[a-zA-Z0-9_]+"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "domain": {
-                        "type": "string",
-                        "pattern": "[a-zA-Z0-9_]+"
-                    }
+                    "domain": { "$ref": "#/$defs/alnum-name" }
                 },
-                "required": [ "name", "domain" ]
+                "required": [ "domain" ]
             }
         },
         "domains": {
             "type": "array",
             "items": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "pattern": "[a-zA-Z0-9_]+"
+                "allOf": [ { "$ref": "#/$defs/identifiable" } ],
+                "unevaluatedProperties": false,
+                "oneOf": [{
+                    "properties": {
+                        "externalRef": { "type": "string" }
                     },
-                    "parent": {
-                        "type": "string",
-                        "pattern": "[a-zA-Z0-9_]+"
+                    "required": [ "externalRef" ]
+                }, {
+                    "properties": {
+                        "parent": { "$ref": "#/$defs/alnum-name" }
                     },
-                    "externalRef": {
-                        "type": "string"
-                    },
-                    "restriction": {
-                        "type": "array",
-                        "uniqueItems": true,
-                        "items": {}
-                    },
-                    "enumerated": {
-                        "type": "array",
-                        "uniqueItems": true,
-                        "items": {}
-                    },
-                    "described": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "name",
-                    "parent",
-                    "externalRef"
-                ]
+                    "required": [ "parent" ],
+                    "oneOf": [{
+                        "properties": {
+                            "restriction": { "$ref": "#/$defs/set-type" }
+                        },
+                        "required": [ "restriction" ]
+                    }, {
+                        "properties": {
+                            "enumerated": { "$ref": "#/$defs/set-type" }
+                        },
+                        "required": [ "enumerated" ]
+                    }, {
+                        "properties": {
+                            "described": { "type": "string" }
+                        },
+                        "required": [ "described" ]
+                    }]
+                }]
             }
         }
     }
