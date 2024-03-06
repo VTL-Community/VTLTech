@@ -42,9 +42,9 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "description": "VTL Metadata JSON serialization",
     "$defs": {
-        "alnum-name": {
+        "vtl-id": {
             "type": "string",
-            "pattern": "[a-zA-Z0-9_]+"
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$|^'.*'$"
         },
         "set-type": {
             "type": "array",
@@ -57,7 +57,7 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
         "identifiable": {
             "type": "object",
             "properties": {
-                "name": { "$ref": "#/$defs/alnum-name" },
+                "name": { "$ref": "#/$defs/vtl-id" },
                 "description": { "type": "string" }
             },
             "required": [ "name" ]
@@ -71,7 +71,7 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
                 "allOf": [ { "$ref": "#/$defs/identifiable" } ],
                 "properties": {
                     "source": { "type": "string" },
-                    "structure": { "$ref": "#/$defs/alnum-name" }
+                    "structure": { "$ref": "#/$defs/vtl-id" }
                 },
                 "required": [ "structure" ]
             }
@@ -90,7 +90,7 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
                                     "type": "string",
                                     "enum": [ "Identifier", "Measure", "Attribute", "Viral Attribute" ]
                                 },
-                                "subset": { "$ref": "#/$defs/alnum-name" },
+                                "subset": { "$ref": "#/$defs/vtl-id" },
                                 "nullable": { "type": "boolean" }
                             },
                             "required": [ "role" ]
@@ -105,7 +105,7 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
             "items": {
                 "allOf": [ { "$ref": "#/$defs/identifiable" } ],
                 "properties": {
-                    "domain": { "$ref": "#/$defs/alnum-name" }
+                    "domain": { "$ref": "#/$defs/vtl-id" }
                 },
                 "required": [ "domain" ]
             }
@@ -123,7 +123,7 @@ one or both MAY be omitted if the VTL engine can infer them from its running env
                         "required": [ "externalRef" ]
                     }, {
                         "properties": {
-                            "parent": { "$ref": "#/$defs/alnum-name" }
+                            "parent": { "$ref": "#/$defs/vtl-id" }
                         },
                         "required": [ "parent" ],
                         "oneOf": [{
