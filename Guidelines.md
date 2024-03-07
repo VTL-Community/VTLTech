@@ -14,7 +14,50 @@ interpreted as in the specification, they MUST be written upper-case.
 
 # Error messages
 
+VTL error messages are categorized by a series of at least two numbers, separated by dashes.
+The first number assigns the error message to one of the general categories. The second
+number assigns the error message to a group inside each category. The meaning of additional
+numbers beyond the second is implementation dependent.
 
+The taxonomy of categories and groups is as follows:
+
+<ol>
+<li>Syntax errors (related to grammar inconsistencies in the VTL program)<ol>
+    <li>Error group A</li>
+    <li>Error group B</li>
+</ol></li><li>Semantic errors (related to metadata verification)<ol>
+    <li>Error group C</li>
+    <li>Error group D</li>
+</ol></li><li>Operator errors (related to specific operators)<ol>
+    <li>Error group E</li>
+    <li>Error group F</li>
+</ol></li><li>Definition errors (related to <code>define</code> statements)<ol>
+    <li>Error group G</li>
+    <li>Error group S</li>
+</ol></li><li>Data errors (related to storage or retrieval of actual data)<ol>
+    <li>Error group G</li>
+    <li>Error group S</li>
+</ol></li>
+</ol>
+
+## Error message examples
+
+This section provides a list of template examples for specific error messages. The templates
+can be parameterized in order to include information about an actual error. The list is not
+intented to be exhaustive, and additional categories MAY be added at a later time.
+
+VTL engine implementations MAY choose to override any template definition and the textual
+representation of any eventual parameter in each template.
+
+### Syntax errors
+
+### Semantic errors
+
+### Operator errors
+
+### Definition errors
+
+### Data errors
 
 # Serialization of VTL artifacts
 
@@ -22,8 +65,8 @@ Sometimes there may be a need to exchange VTL artifacts when operating in H2M or
 This chapter defines a JSON schema that aims to provide an easy implementation of this 
 serialization mechanism.
 
-VTL engine implementors MAY not implement this specific scheme and they MAY provide support for
-alternative or extended serialization schemes.
+VTL engine implementors MAY not implement this specific scheme and they MAY provide support
+for alternative or extended serialization schemes.
 
 ## JSON schemes
 
