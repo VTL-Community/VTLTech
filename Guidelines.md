@@ -62,27 +62,15 @@ representation of any eventual parameter in each template.
 # Serialization of VTL artifacts
 
 Sometimes there may be a need to exchange VTL artifacts when operating in H2M or M2M mode.
-This chapter defines a JSON schema that aims to provide an easy implementation of this 
+This section defines a JSON schema that aims to provide an easy implementation of this 
 serialization mechanism.
 
-VTL engine implementors MAY not implement this specific scheme and they MAY provide support
-for alternative or extended serialization schemes.
+The schema encompasses all VTL artifacts included in the VTL User Manual section "Generic Model
+for Variables and Value domains". VTL engines MAY not implement this specific scheme and/or
+they MAY provide support for alternative or extended serialization schemes. All of the four
+sections of the JSON schema are optional if the implementation does not require them.
 
-## JSON schemes
-
-There are two JSON schemes, one for data and the other for metadata. The parts MAY be instanced
-into a single JSON object, in this case each part instance SHOULD be a property named `data` 
-or `metadata` respectively, or they MAY be provided as two different JSON files. In any case,
-one or both MAY be omitted if the VTL engine can infer them from its running environment.
-
-### JSON scheme for data
-
-```json
-{
-}
-```
-
-### JSON scheme for metadata
+## JSON scheme for VTL metadata
 
 ```json
 {
