@@ -19,26 +19,13 @@ The first number assigns the error message to one of the general categories. The
 number assigns the error message to a group inside each category. The meaning of additional
 numbers beyond the second is implementation dependent.
 
-The taxonomy of categories and groups is as follows:
+The taxonomy of categories is as follows:
 
-<ol>
-<li>Syntax errors (related to grammar inconsistencies in the VTL program)<ol>
-    <li>Error group A</li>
-    <li>Error group B</li>
-</ol></li><li>Semantic errors (related to metadata verification)<ol>
-    <li>Error group C</li>
-    <li>Error group D</li>
-</ol></li><li>Operator errors (related to specific operators)<ol>
-    <li>Error group E</li>
-    <li>Error group F</li>
-</ol></li><li>Definition errors (related to <code>define</code> statements)<ol>
-    <li>Error group G</li>
-    <li>Error group S</li>
-</ol></li><li>Data errors (related to storage or retrieval of actual data)<ol>
-    <li>Error group G</li>
-    <li>Error group S</li>
-</ol></li>
-</ol>
+1. Syntax errors (related to grammar inconsistencies in the VTL program)
+2. Semantic errors (related to metadata verification)
+3. Operator errors (related to specific operators)
+4. Definition errors (related to <code>define</code> statements)
+5. Data errors (related to storage or retrieval of actual data)<ol>
 
 ## Error message examples
 
@@ -49,9 +36,84 @@ intented to be exhaustive, and additional categories MAY be added at a later tim
 VTL engine implementations MAY choose to override any template definition and the textual
 representation of any eventual parameter in each template.
 
+Abbreviations are used in the template to signify specific VTL language elements, as follows:
+
+| Placeholder | Meaning                                                                              |
+|-------------|--------------------------------------------------------------------------------------|
+| `%c`        | A component (represented with name, role and valuedomain)                            |
+| `%r`        | The role of a component (component, identifier, measure, attribute, viral attribute) |
+| `%d`        | A valuedomain or valuedomain subset                                                  |
+| `%s`        | A data structure or set of unique components                                         |
+| `%n`        | An alias to a dataset, component, ruleset or operator                                |
+| `%o`        | A VTL operator's name or operator group's name                                       |
+
 ### Syntax errors
 
 ### Semantic errors
+
+<table>
+    <tr></tr>
+    <tr>
+        <th>Group</th>
+        <th>Description</th>
+        <th>Template examples</th>
+    </tr>
+    <tr></tr>
+    <tr>
+        <td></td>
+        <td>Expected exactly one component of a given role and/or domain</td>
+        <td><pre>Required&nbsp;exactly&nbsp;one&nbsp;%r&nbsp;of&nbsp;domain&nbsp;%d,&nbsp;but&nbsp;found:&nbsp;%s
+Required&nbsp;exactly&nbsp;one&nbsp;%r,&nbsp;but&nbsp;found:&nbsp;%s</pre></td>
+    </tr>
+    <tr></tr>
+    <tr>
+        <td></td>
+        <td>Components of a given role and/or domain are not present in a structure</td>
+        <td><pre>Required&nbsp;at&nbsp;least&nbsp;one&nbsp;%r&nbsp;of&nbsp;domain&nbsp;%d,&nbsp;but&nbsp;found:&nbsp;%s
+Required&nbsp;at&nbsp;least&nbsp;one&nbsp;%r,&nbsp;but&nbsp;found:&nbsp;%s</pre></td>
+    </tr>
+    <tr></tr>
+    <tr>
+        <td></td>
+        <td>One or more components were requested but are not present</td>
+        <td><pre>Component&nbsp;%n&nbsp;not&nbsp;found&nbsp;in&nbsp;%s
+Components&nbsp;%n,&nbsp;%n,&nbsp;%n...&nbsp;not&nbsp;found&nbsp;in&nbsp;%s</pre></td>
+    </tr>
+    <tr></tr>
+    <tr>
+        <td></td>
+        <td>Identifiers must be invariant</td>
+        <td><pre>%o&nbsp;cannot&nbsp;change&nbsp;identifiers&nbsp;%s
+%o&nbsp;cannot&nbsp;change&nbsp;identifier&nbsp;%n&nbsp;to&nbsp;a&nbsp;%r
+%o&nbsp;cannot&nbsp;change&nbsp;%c&nbsp;to&nbsp;an&nbsp;identifier
+%o&nbsp;cannot&nbsp;change&nbsp;identifiers&nbsp;from&nbsp;%s&nbsp;to&nbsp;%s</pre></td>
+    </tr>
+    <tr></tr>
+    <tr>
+        <td></td>
+        <td>Named components are not present in a structure</td>
+        <td><pre>Components&nbsp;named&nbsp;%n,&nbsp;%n,&nbsp;...&nbsp;not&nbsp;found&nbsp;in&nbsp;%s
+Component&nbsp;named&nbsp;%n&nbsp;not&nbsp;found&nbsp;in&nbsp;%s
+Components&nbsp;%s&nbsp;not&nbsp;found&nbsp;in&nbsp;%s
+Component&nbsp;%c&nbsp;not&nbsp;found&nbsp;in&nbsp;%s</pre></td>
+    </tr>
+    <tr></tr>
+    <tr>
+        <td></td>
+        <td>An undefined alias is used in an expression</td>
+        <td><pre>Alias&nbsp;%n&nbsp;is&nbsp;not&nbsp;bound&nbsp;to&nbsp;this&nbsp;transformation&nbsp;scheme
+In&nbsp;%o,&nbsp;alias&nbsp;%n&nbsp;is&nbsp;not&nbsp;defined</pre></td>
+    </tr>
+    <tr></tr>
+    <tr>
+        <td></td>
+        <td>Operator parameters or results have mismatched domains</td>
+        <td><pre>Incompatible&nbsp;types&nbsp;in&nbsp;%o:&nbsp;%c&nbsp;and&nbsp;%c
+Incompatible&nbsp;types&nbsp;in&nbsp;%o:&nbsp;%c&nbsp;and&nbsp;%d
+Incompatible&nbsp;types&nbsp;in&nbsp;%o:&nbsp;%d&nbsp;and&nbsp;%c
+Incompatible&nbsp;types&nbsp;in&nbsp;%o:&nbsp;%d&nbsp;and&nbsp;%d</pre></td>
+    </tr>
+</table>
 
 ### Operator errors
 
